@@ -9,25 +9,20 @@ on:
 jobs:
   quality-checks:
     runs-on: ubuntu-latest
-    
-    strategy:
-      matrix:
-        node-version: [18.x, 20.x, 22.x]
+    container:
+      image: node:22-alpine
     
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
       
+    - name: Install Git (required for pnpm in Alpine)
+      run: apk add --no-cache git
+      
     - name: Setup pnpm
       uses: pnpm/action-setup@v4
       with:
         version: 10.15.0
-        
-    - name: Setup Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'pnpm'
         
     - name: Install dependencies
       run: pnpm install
@@ -50,21 +45,20 @@ jobs:
   build:
     needs: quality-checks
     runs-on: ubuntu-latest
+    container:
+      image: node:22-alpine
     
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
       
+    - name: Install Git (required for pnpm in Alpine)
+      run: apk add --no-cache git
+      
     - name: Setup pnpm
       uses: pnpm/action-setup@v4
       with:
         version: 10.15.0
-        
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20.x'
-        cache: 'pnpm'
         
     - name: Install dependencies
       run: pnpm install
