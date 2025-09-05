@@ -3,8 +3,8 @@
  * KeyId management and automatic unloading with configurable storage
  */
 
-import { pfxPlugin } from './plugins/pfx.js';
 import { sessionManager } from './core/session-manager.js';
+import { pfxPlugin } from './plugins/pfx.js';
 
 // ===============================================
 // 1. BASIC SESSION MANAGEMENT
@@ -312,28 +312,24 @@ function getSessionStatus(alias: string) {
 // ===============================================
 
 export {
-  // Basic usage
-  loadKeyWithSession,
-  findAndVerifyKey,
-
+  cleanupOnExit,
+  configureCookieStorage,
   // Storage configuration
   configureLocalStorage,
-  configureCookieStorage,
   configureMemoryStorage,
-
-  // Session monitoring
-  monitorActiveSessions,
   extendSession,
-  removeSession,
-
+  findAndVerifyKey,
+  getSessionStatus,
   // Advanced patterns
   handleMultipleKeys,
-  setupAutoCleanupMonitoring,
-  cleanupOnExit,
-
   // UI integration
   loadKeyWithCheckbox,
-  getSessionStatus
+  // Basic usage
+  loadKeyWithSession,
+  // Session monitoring
+  monitorActiveSessions,
+  removeSession,
+  setupAutoCleanupMonitoring
 };
 
 // ===============================================

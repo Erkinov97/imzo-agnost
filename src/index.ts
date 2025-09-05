@@ -1,7 +1,7 @@
 // Legacy exports for backward compatibility
 export {
-  dates,
   default as EIMZOClient,
+  dates,
   type CertificateInfo,
   type EIMZOClientType
 } from './e-imzo-client.js';
@@ -9,7 +9,7 @@ export { default as CAPIWS } from './e-imzo/capiws.js';
 
 // New modern API
 export * from './eimzo-api.js';
-export { default as eimzoApi, EIMZOApi } from './eimzo-api.js';
+export { EIMZOApi, default as eimzoApi } from './eimzo-api.js';
 
 // Core types and classes
 export { EIMZOPlugin, PluginManager } from './core/plugin-base.js';
@@ -17,10 +17,10 @@ export * from './core/types.js';
 
 // Session Management
 export {
-  sessionManager,
   EIMZOSessionManager,
-  type SessionConfig,
+  sessionManager,
   type KeySession,
+  type SessionConfig,
   type StorageType
 } from './core/session-manager.js';
 

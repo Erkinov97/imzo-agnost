@@ -1,6 +1,6 @@
 {
   "name": "imzo-agnost",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "type": "module",
   "description": "Modern TypeScript library for E-IMZO API with comprehensive plugin architecture supporting all E-IMZO operations including PFX/PKCS7/FTJC/CryptoAuth/X509/TSA/CRL/PKI and more",
   "main": "dist/index.cjs",

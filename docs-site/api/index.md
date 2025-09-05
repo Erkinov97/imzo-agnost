@@ -166,23 +166,83 @@ eimzoApi.cipher.decrypt(
 
 PKCS#7 imzo operatsiyalari.
 
+##### Enhanced API (Tavsiya etiladi)
+
+Avtomatik base64 encoding va smart defaults bilan:
+
 ```typescript
-// Imzo yaratish
-eimzoApi.pkcs7.sign(
-  keyId,
-  data,
-  false, // detached
-  signature => console.log('Imzo:', signature),
-  (error, reason) => console.error('Xatolik:', reason)
+// 🚀 YANGI API - Oddiy string bilan imzolash
+const pkcs7Result = await eimzoApi.pkcs7.createPkcs7Async(
+  'Hello, E-IMZO!', // Plain string - avtomatik base64 ga aylanadi
+  keyId
+  // Default: attached signature, auto base64 encoding
 );
 
-// Imzoni tekshirish
-eimzoApi.pkcs7.verify(
+// Detached signature yaratish
+const detachedResult = await eimzoApi.pkcs7.createPkcs7Async(
+  'Important document',
+  keyId,
+  {
+    detached: true, // Boolean value
+    autoBase64: true // Avtomatik encoding (default)
+  }
+);
+
+// Allaqachon base64 data bilan ishlash
+const base64Result = await eimzoApi.pkcs7.createPkcs7Async(
+  btoa('Some data'),
+  keyId,
+  {
+    autoBase64: false // Base64 encoding o'chirish
+  }
+);
+
+// Detached signature ni tekshirish
+const verifyResult = await eimzoApi.pkcs7.verifyPkcs7DetachedAsync(
+  'Original document', // Plain text - avtomatik base64
   signature,
-  originalData,
-  isValid => console.log("Imzo to'g'ri:", isValid),
+  trustStoreId
+);
+```
+
+##### Legacy API (Backward compatibility)
+
+```typescript
+// 📛 ESKI USUL - Manual base64 encoding
+const data = btoa('Hello, E-IMZO!');
+const pkcs7Result = await eimzoApi.pkcs7.createPkcs7LegacyAsync(
+  data,
+  keyId,
+  'no' // Manual detached parameter
+);
+
+// Callback-based original method
+eimzoApi.pkcs7.createPkcs7(
+  data64,
+  keyId,
+  'no', // 'yes'/'no'/''
+  (event, response) => console.log('Imzo:', response.data.pkcs7_64),
   (error, reason) => console.error('Xatolik:', reason)
 );
+```
+
+##### API Taqqoslash
+
+```typescript
+// ❌ AVVAL (Manual & Complex)
+const data = btoa('Hello, E-IMZO!');
+const result = await eimzoApi.pkcs7.createPkcs7LegacyAsync(data, keyId, 'no');
+
+// ✅ HOZIR (Auto & Simple)
+const result = await eimzoApi.pkcs7.createPkcs7Async('Hello, E-IMZO!', keyId);
+
+// 📊 AFZALLIKLARI:
+// - Manual btoa() encoding kerak emas
+// - Smart defaults (attached signature)
+// - Boolean detached option (true/false vs 'yes'/'no')
+// - UTF-8 string support
+// - Auto-detection of base64 data
+// - Backward compatibility
 ```
 
 #### FileIOPlugin

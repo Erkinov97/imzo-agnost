@@ -206,13 +206,34 @@ pfxPlugin.loadKey(disk, path, name, alias, onSuccess, onError);
 ```typescript
 import { pkcs7Plugin } from 'imzo-agnost';
 
-// Promise API
-await pkcs7Plugin.createPkcs7Async(data64, keyId, detached);
-await pkcs7Plugin.getPkcs7AttachedInfoAsync(pkcs764);
-await pkcs7Plugin.verifyPkcs7AttachedAsync(pkcs764, trustStoreId);
+// 🚀 Enhanced API (Recommended)
+// Avtomatik base64 encoding va smart defaults
+await pkcs7Plugin.createPkcs7Async(
+  'Hello, E-IMZO!', // Plain string - avtomatik base64 ga aylanadi
+  keyId
+  // Default: attached signature, auto base64 encoding
+);
+
+// Detached signature
+await pkcs7Plugin.createPkcs7Async('Document content', keyId, {
+  detached: true,
+  autoBase64: true
+});
+
+// Allaqachon base64 data
+await pkcs7Plugin.createPkcs7Async(base64Data, keyId, { autoBase64: false });
+
+// 📛 Legacy API (Backward compatibility)
+await pkcs7Plugin.createPkcs7LegacyAsync(btoa('data'), keyId, 'no');
 
 // Callback API
-pkcs7Plugin.createPkcs7(data64, keyId, detached, onSuccess, onError);
+pkcs7Plugin.createPkcs7Enhanced(
+  'Plain text data',
+  keyId,
+  { detached: false },
+  onSuccess,
+  onError
+);
 ```
 
 ### FTJC Plugin

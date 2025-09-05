@@ -1,11 +1,11 @@
 import { EIMZOPlugin, RegisterPlugin } from '../core/plugin-base';
 import { sessionManager, type SessionConfig } from '../core/session-manager';
 import type {
-  CertificateInfo,
-  KeyResponse,
-  ListResponse,
   CallbackFunction,
-  ErrorCallback
+  CertificateInfo,
+  ErrorCallback,
+  KeyResponse,
+  ListResponse
 } from '../core/types';
 
 // PFX-specific response types
