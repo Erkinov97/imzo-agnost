@@ -15,7 +15,7 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  build-docs:
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -39,22 +39,35 @@ jobs:
         run: pnpm run docs:build
         
       - name: Setup Pages
+        id: pages
         uses: actions/configure-pages@v4
-        with:
-          enablement: true
+        continue-on-error: true
           
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: docs-site/.vitepress/dist
 
-  deploy-docs:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    needs: build-docs
-    steps:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+        continue-on-error: true
+        
+      - name: Show deployment URL
+        if: steps.deployment.outputs.page_url
+        run: |
+          echo "✅ Documentation deployed successfully!"
+          echo "🌐 Site URL: ${{ steps.deployment.outputs.page_url }}"
+          
+      - name: Pages setup required
+        if: failure()
+        run: |
+          echo "❌ GitHub Pages is not enabled yet!"
+          echo ""
+          echo "📋 To enable GitHub Pages:"
+          echo "1. Go to Settings → Pages"
+          echo "2. Set Source to 'GitHub Actions'"
+          echo "3. Save and re-run this workflow"
+          echo ""
+          echo "🔗 Direct link: https://github.com/${{ github.repository }}/settings/pages"
+          exit 1

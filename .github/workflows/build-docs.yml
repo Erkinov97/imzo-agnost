@@ -1,0 +1,48 @@
+name: Build Documentation Only
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.15.0
+          
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+          
+      - name: Install dependencies
+        run: pnpm install
+        
+      - name: Build documentation
+        run: pnpm run docs:build
+        
+      - name: Upload documentation artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: documentation
+          path: docs-site/.vitepress/dist
+          retention-days: 30
+          
+      - name: Instructions
+        run: |
+          echo "✅ Documentation built successfully!"
+          echo ""
+          echo "📋 To deploy to GitHub Pages:"
+          echo "1. Enable Pages: https://github.com/${{ github.repository }}/settings/pages"
+          echo "2. Set Source to 'GitHub Actions'"
+          echo "3. Re-run the 'Deploy Documentation' workflow"
+          echo ""
+          echo "📦 Documentation files are available as workflow artifacts above."

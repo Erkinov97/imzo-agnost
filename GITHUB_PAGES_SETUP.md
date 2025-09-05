@@ -3,29 +3,31 @@
 To enable the **FREE** documentation website at
 `https://erkinov97.github.io/imzo-agnost/`, follow these simple steps:
 
-## Step 1: Enable GitHub Pages
+## ⚠️ IMPORTANT: Enable Pages First!
 
-1. **Go to your repository**: https://github.com/Erkinov97/imzo-agnost
-2. **Click on "Settings"** tab (top right of repository)
-3. **Scroll down to "Pages"** in the left sidebar
-4. **Select Source**: Choose "GitHub Actions" from dropdown
-5. **Save the settings**
+**You MUST enable GitHub Pages before the deployment workflow will work.**
 
-## Step 2: Manual Trigger (First Time)
+### Step 1: Enable GitHub Pages
 
-Since Pages wasn't enabled before, manually trigger the deployment:
+1. **Go to repository Settings**:
+   https://github.com/Erkinov97/imzo-agnost/settings/pages
+2. **Under "Source"**: Select **"GitHub Actions"** from the dropdown
+3. **Click "Save"**
 
-1. **Go to "Actions" tab** in your repository
-2. **Click on "Deploy Documentation"** workflow
+### Step 2: Trigger Deployment
+
+After enabling Pages, trigger the first deployment:
+
+1. **Go to Actions tab**: https://github.com/Erkinov97/imzo-agnost/actions
+2. **Click "Deploy Documentation"** workflow (left sidebar)
 3. **Click "Run workflow"** → **"Run workflow"** button
-4. **Wait for completion** (2-3 minutes)
+4. **Wait 2-3 minutes** for completion
 
-## Step 3: Check Deployment Status
+### Step 3: Access Your Website
 
-1. **Monitor the workflow** in the Actions tab
-2. **Look for green checkmarks** ✅ on all steps
-3. **Your site will be available** at: https://erkinov97.github.io/imzo-agnost/
-4. **Future pushes** will auto-deploy
+- **Your site**: https://erkinov97.github.io/imzo-agnost/
+- **Auto-deploys**: Every push to main branch
+- **Build time**: ~2 minutes per deployment
 
 ## 💰 Cost Breakdown (100% FREE!)
 
