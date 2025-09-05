@@ -28,7 +28,10 @@
     "prepare": "husky",
     "commit": "cz",
     "test": "echo \"Tests will be added later\" && exit 0",
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist",
+    "docs:dev": "vitepress dev docs-site",
+    "docs:build": "vitepress build docs-site",
+    "docs:preview": "vitepress preview docs-site"
   },
   "keywords": [
     "e-imzo",
@@ -46,7 +49,7 @@
   "license": "ISC",
   "packageManager": "pnpm@10.15.0",
   "engines": {
-    "node": ">=20.0.0",
+    "node": ">=18.0.0",
     "pnpm": ">=9.0.0"
   },
   "config": {
@@ -66,13 +69,14 @@
     "commitizen": "^4.3.1",
     "cz-conventional-changelog": "^3.3.0",
     "eslint": "^9.35.0",
-    "eslint-plugin-unicorn": "^60.0.0",
+    "eslint-plugin-unicorn": "55.0.0",
     "husky": "^9.1.7",
     "lint-staged": "^16.1.6",
     "oxlint": "^1.14.0",
     "prettier": "^3.6.2",
     "tsup": "^8.5.0",
     "typescript": "^5.9.2",
-    "typescript-eslint": "^8.42.0"
+    "typescript-eslint": "^8.42.0",
+    "vitepress": "^1.6.4"
   }
 }
