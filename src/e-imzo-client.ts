@@ -37,8 +37,15 @@ interface DateConvertible {
 
 interface DatesUtility {
   convert(d: Date | number[] | number | string | DateConvertible): Date | number;
-  compare(a: any, b: any): number;
-  inRange(d: any, start: any, end: any): boolean | number;
+  compare(
+    a: Date | number[] | number | string | DateConvertible,
+    b: Date | number[] | number | string | DateConvertible
+  ): number;
+  inRange(
+    d: Date | number[] | number | string | DateConvertible,
+    start: Date | number[] | number | string | DateConvertible,
+    end: Date | number[] | number | string | DateConvertible
+  ): boolean | number;
 }
 
 interface CertificateInfo {
@@ -63,7 +70,7 @@ interface CertificateInfo {
 }
 
 interface ErrorInfo {
-  e?: any;
+  e?: unknown;
   r?: string;
 }
 
@@ -71,7 +78,7 @@ type FailCallback = (error: unknown, reason: string | null) => void;
 
 type ItemIdGenerator = (vo: CertificateInfo, rec: string) => string;
 
-type ItemUiGenerator = (key: string, vo: CertificateInfo) => any;
+type ItemUiGenerator = (key: string, vo: CertificateInfo) => unknown;
 
 interface ApiResponse {
   success: boolean;
@@ -80,9 +87,25 @@ interface ApiResponse {
   minor?: string;
   keyId?: string;
   pkcs7_64?: string;
-  readers?: any[];
-  certificates?: any[];
-  tokens?: any[];
+  readers?: unknown[];
+  certificates?: Record<
+    string,
+    {
+      disk: string;
+      path: string;
+      name: string;
+      alias: string;
+    }
+  >;
+  tokens?: Record<
+    string,
+    {
+      cardUID: string;
+      statusInfo: string;
+      ownerName: string;
+      info: string;
+    }
+  >;
 }
 
 interface EIMZOClientType {
@@ -94,7 +117,7 @@ interface EIMZOClientType {
   listAllUserKeys(
     itemIdGen: ItemIdGenerator,
     itemUiGen: ItemUiGenerator,
-    success: (items: any[], firstId: string | null) => void,
+    success: (items: unknown[], firstId: string | null) => void,
     fail: FailCallback
   ): void;
   idCardIsPLuggedIn(success: (isPlugged: boolean) => void, fail: FailCallback): void;
@@ -108,7 +131,7 @@ interface EIMZOClientType {
   createPkcs7(
     id: string,
     data: string,
-    timestamper: any,
+    timestamper: unknown,
     success: (pkcs7: string) => void,
     fail: FailCallback,
     detached?: boolean,
@@ -118,14 +141,14 @@ interface EIMZOClientType {
   _findPfxs2(
     itemIdGen: ItemIdGenerator,
     itemUiGen: ItemUiGenerator,
-    items: any[],
+    items: unknown[],
     errors: ErrorInfo[],
     callback: (firstItemId?: string) => void
   ): void;
   _findTokens2(
     itemIdGen: ItemIdGenerator,
     itemUiGen: ItemUiGenerator,
-    items: any[],
+    items: unknown[],
     errors: ErrorInfo[],
     callback: (firstItemId?: string) => void
   ): void;
@@ -158,7 +181,10 @@ const dates: DatesUtility = {
     return NaN;
   },
 
-  compare(a: any, b: any): number {
+  compare(
+    a: Date | number[] | number | string | DateConvertible,
+    b: Date | number[] | number | string | DateConvertible
+  ): number {
     // Compare two dates (could be of any type supported by the convert
     // function above) and returns:
     //  -1 : if a < b
@@ -171,7 +197,11 @@ const dates: DatesUtility = {
     return isFinite(aVal) && isFinite(bVal) ? (aVal > bVal ? 1 : 0) - (aVal < bVal ? 1 : 0) : NaN;
   },
 
-  inRange(d: any, start: any, end: any): boolean | number {
+  inRange(
+    d: Date | number[] | number | string | DateConvertible,
+    start: Date | number[] | number | string | DateConvertible,
+    end: Date | number[] | number | string | DateConvertible
+  ): boolean | number {
     // Checks if date in d is between dates in start and end.
     // Returns a boolean or NaN:
     //    true  : if d is between start and end (inclusive)
@@ -189,7 +219,6 @@ const dates: DatesUtility = {
 
 // String prototype extension
 String.prototype.splitKeep = function (splitter: string | RegExp, ahead?: boolean): string[] {
-  const inputString = this;
   const result: string[] = [];
 
   if (splitter !== '') {
@@ -206,12 +235,18 @@ String.prototype.splitKeep = function (splitter: string | RegExp, ahead?: boolea
     const matches: Array<{ value: string; index: number }> = [];
 
     // Getting matched value and its index
-    const replaceName = splitter instanceof RegExp ? 'replace' : 'replaceAll';
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (inputString as any)[replaceName](splitter, (m: string, i: number) => {
-      matches.push({ value: m, index: i });
-      return getSubst(m);
-    });
+    if (splitter instanceof RegExp) {
+      this.replace(splitter, (m: string, ...args: unknown[]) => {
+        const offset = args[args.length - 2] as number;
+        matches.push({ value: m, index: offset });
+        return getSubst(m);
+      });
+    } else {
+      this.replaceAll(splitter, (m: string, offset: number) => {
+        matches.push({ value: m, index: offset });
+        return getSubst(m);
+      });
+    }
 
     // Finds split substrings
     let lastIndex = 0;
@@ -220,18 +255,18 @@ String.prototype.splitKeep = function (splitter: string | RegExp, ahead?: boolea
       if (m) {
         const nextIndex = ahead === true ? m.index : m.index + m.value.length;
         if (nextIndex !== lastIndex) {
-          const part = inputString.substring(lastIndex, nextIndex);
+          const part = this.substring(lastIndex, nextIndex);
           result.push(part);
           lastIndex = nextIndex;
         }
       }
     }
-    if (lastIndex < inputString.length) {
-      const part = inputString.substring(lastIndex, inputString.length);
+    if (lastIndex < this.length) {
+      const part = this.substring(lastIndex, this.length);
       result.push(part);
     }
   } else {
-    result.push(inputString.toString());
+    result.push(this.toString());
   }
   return result;
 };
@@ -263,7 +298,7 @@ const EIMZOClient: EIMZOClientType = {
           fail(null, data.reason || 'Unknown error');
         }
       },
-      (e: any) => {
+      (e: unknown) => {
         fail(e, null);
       }
     );
@@ -279,7 +314,7 @@ const EIMZOClient: EIMZOClientType = {
           fail(null, data.reason || 'Unknown error');
         }
       },
-      (e: any) => {
+      (e: unknown) => {
         fail(e, null);
       }
     );
@@ -288,10 +323,10 @@ const EIMZOClient: EIMZOClientType = {
   listAllUserKeys(
     itemIdGen: ItemIdGenerator,
     itemUiGen: ItemUiGenerator,
-    success: (items: any[], firstId: string | null) => void,
+    success: (items: unknown[], firstId: string | null) => void,
     fail: FailCallback
   ): void {
-    const items: any[] = [];
+    const items: unknown[] = [];
     const errors: ErrorInfo[] = [];
 
     if (!EIMZOClient.NEW_API) {
@@ -351,7 +386,7 @@ const EIMZOClient: EIMZOClientType = {
             fail(null, data.reason || 'Unknown error');
           }
         },
-        (e: any) => {
+        (e: unknown) => {
           fail(e, null);
         }
       );
@@ -386,7 +421,7 @@ const EIMZOClient: EIMZOClientType = {
                       fail(null, data.reason || 'Password verification failed');
                     }
                   },
-                  (e: any) => {
+                  (e: unknown) => {
                     fail(e, null);
                   }
                 );
@@ -397,7 +432,7 @@ const EIMZOClient: EIMZOClientType = {
               fail(null, data.reason || 'Failed to load key');
             }
           },
-          (e: any) => {
+          (e: unknown) => {
             fail(e, null);
           }
         );
@@ -417,7 +452,7 @@ const EIMZOClient: EIMZOClientType = {
                       fail(null, data.reason || 'PIN verification failed');
                     }
                   },
-                  (e: any) => {
+                  (e: unknown) => {
                     fail(e, null);
                   }
                 );
@@ -428,7 +463,7 @@ const EIMZOClient: EIMZOClientType = {
               fail(null, data.reason || 'Failed to load key');
             }
           },
-          (e: any) => {
+          (e: unknown) => {
             fail(e, null);
           }
         );
@@ -458,7 +493,7 @@ const EIMZOClient: EIMZOClientType = {
                     fail(null, data.reason || 'Failed to change password');
                   }
                 },
-                (e: any) => {
+                (e: unknown) => {
                   fail(e, null);
                 }
               );
@@ -466,7 +501,7 @@ const EIMZOClient: EIMZOClientType = {
               fail(null, data.reason || 'Failed to load key');
             }
           },
-          (e: any) => {
+          (e: unknown) => {
             fail(e, null);
           }
         );
@@ -485,7 +520,7 @@ const EIMZOClient: EIMZOClientType = {
                     fail(null, data.reason || 'Failed to change PIN');
                   }
                 },
-                (e: any) => {
+                (e: unknown) => {
                   fail(e, null);
                 }
               );
@@ -493,7 +528,7 @@ const EIMZOClient: EIMZOClientType = {
               fail(null, data.reason || 'Failed to load key');
             }
           },
-          (e: any) => {
+          (e: unknown) => {
             fail(e, null);
           }
         );
@@ -516,7 +551,10 @@ const EIMZOClient: EIMZOClientType = {
       data64 = data;
     } else {
       // Assuming Base64 utility is available globally or imported
-      data64 = (globalThis as any).Base64?.encode(data) || btoa(data);
+      data64 =
+        (
+          globalThis as unknown as Record<string, { encode: (data: string) => string }>
+        ).Base64?.encode(data) || btoa(data);
     }
 
     const detachedStr = detached === true ? 'yes' : 'no';
@@ -535,7 +573,7 @@ const EIMZOClient: EIMZOClientType = {
           fail(null, data.reason || 'Failed to create PKCS7');
         }
       },
-      (e: any) => {
+      (e: unknown) => {
         fail(e, null);
       }
     );
@@ -570,6 +608,8 @@ const EIMZOClient: EIMZOClientType = {
         if (data.success && data.certificates) {
           for (const rec in data.certificates) {
             const el = data.certificates[rec];
+            if (!el) continue;
+
             let x500name_ex = el.alias.toUpperCase();
             x500name_ex = x500name_ex.replace('1.2.860.3.16.1.1=', 'INN=');
             x500name_ex = x500name_ex.replace('1.2.860.3.16.1.2=', 'PINFL=');
@@ -615,7 +655,7 @@ const EIMZOClient: EIMZOClientType = {
         }
         callback(itmkey0);
       },
-      (e: any) => {
+      (e: unknown) => {
         errors.push({ e: e });
         callback(itmkey0);
       }
@@ -637,6 +677,8 @@ const EIMZOClient: EIMZOClientType = {
         if (data.success && data.tokens) {
           for (const rec in data.tokens) {
             const el = data.tokens[rec];
+            if (!el) continue;
+
             let x500name_ex = el.info.toUpperCase();
             x500name_ex = x500name_ex.replace('1.2.860.3.16.1.1=', 'INN=');
             x500name_ex = x500name_ex.replace('1.2.860.3.16.1.2=', 'PINFL=');
@@ -674,7 +716,7 @@ const EIMZOClient: EIMZOClientType = {
         }
         callback(itmkey0);
       },
-      (e: any) => {
+      (e: unknown) => {
         errors.push({ e: e });
         callback(itmkey0);
       }
