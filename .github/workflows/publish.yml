@@ -1,0 +1,73 @@
+name: 📦 Publish to npm
+
+on:
+  push:
+    tags:
+      - 'v*.*.*' # Triggers on version tags like v1.0.0, v1.2.3, etc.
+
+jobs:
+  publish:
+    name: 🚀 Publish Package
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      id-token: write # For npm provenance
+
+    steps:
+      - name: 📂 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 📦 Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: '10.15.0'
+
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: 📥 Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: ✅ Run quality checks
+        run: pnpm run quality
+
+      - name: 🏗️ Build package
+        run: pnpm run build
+
+      - name: 🧪 Test build
+        run: pnpm run publish:dry
+
+      - name: 🚀 Publish to npm
+        run: npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: 📝 Create GitHub Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref_name }}
+          release_name: Release ${{ github.ref_name }}
+          body: |
+            🎉 New release of imzo-agnost!
+
+            ## 📦 Installation
+            ```bash
+            pnpm add imzo-agnost@${{ github.ref_name }}
+            npm install imzo-agnost@${{ github.ref_name }}
+            ```
+
+            ## 📚 Documentation
+            - [Documentation Site](https://erkinov97.github.io/imzo-agnost/)
+            - [npm Package](https://www.npmjs.com/package/imzo-agnost)
+
+            ## ✨ What's Changed
+            See the [changelog](https://github.com/Erkinov97/imzo-agnost/compare/${{ github.event.before }}...${{ github.ref_name }}) for details.
+          draft: false
+          prerelease: false

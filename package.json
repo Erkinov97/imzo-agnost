@@ -31,7 +31,10 @@
     "clean": "rm -rf dist",
     "docs:dev": "vitepress dev docs-site",
     "docs:build": "vitepress build docs-site",
-    "docs:preview": "vitepress preview docs-site"
+    "docs:preview": "vitepress preview docs-site",
+    "prepublishOnly": "pnpm run quality && pnpm run build",
+    "publish:npm": "npm publish",
+    "publish:dry": "npm publish --dry-run"
   },
   "keywords": [
     "e-imzo",
@@ -45,8 +48,24 @@
     "websocket",
     "capiws"
   ],
-  "author": "",
+  "author": "Ulugbek Erkinov erkinov997@gmail.com",
   "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Erkinov97/imzo-agnost.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Erkinov97/imzo-agnost/issues"
+  },
+  "homepage": "https://erkinov97.github.io/imzo-agnost/",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
   "packageManager": "pnpm@10.15.0",
   "engines": {
     "node": ">=18.0.0",

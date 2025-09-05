@@ -36,8 +36,12 @@ export function setupGlobalObjects(): void {
     // Modern API
     win.eimzoApi = eimzoApi;
 
-    // Development mode - barcha pluginlarni expose qilish
-    const isDev = typeof process !== 'undefined' && process.env.NODE_ENV === 'development';
+    // Development mode - barcha pluginlarni expose qilish (browser-safe)
+    const isNodeJS =
+      typeof process !== 'undefined' &&
+      typeof process.versions === 'object' &&
+      Boolean(process.versions.node);
+    const isDev = isNodeJS && process.env.NODE_ENV === 'development';
 
     if (isDev) {
       win.imzoPlugins = {

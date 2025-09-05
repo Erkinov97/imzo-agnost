@@ -16,6 +16,11 @@ export default defineConfig({
   bundle: true,
   external: [], // Barcha dependency bundle qilamiz
   noExternal: [], // Har qanday dependency bundle qilamiz
+  define: {
+    // Browser environment uchun process safely handle qilish
+    'process.env.NODE_ENV': '"production"'
+  },
+  inject: ['./polyfills/process-polyfill.js'], // Browser uchun process polyfill
   outExtension({ format }) {
     return {
       js: format === 'cjs' ? '.cjs' : format === 'esm' ? '.mjs' : '.js'
