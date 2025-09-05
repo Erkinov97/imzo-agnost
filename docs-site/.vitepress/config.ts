@@ -1,12 +1,12 @@
-import { defineConfig } from 'vitepress'
+import { defineConfig } from 'vitepress';
 
 export default defineConfig({
   title: 'IMZO Agnost',
   description: 'Modern TypeScript library for E-IMZO API with comprehensive plugin architecture',
-  
+
   base: '/imzo-agnost/',
   ignoreDeadLinks: true,
-  
+
   themeConfig: {
     nav: [
       { text: 'Home', link: '/' },
@@ -74,9 +74,7 @@ export default defineConfig({
       ]
     },
 
-    socialLinks: [
-      { icon: 'github', link: 'https://github.com/Erkinov97/imzo-agnost' }
-    ],
+    socialLinks: [{ icon: 'github', link: 'https://github.com/Erkinov97/imzo-agnost' }],
 
     footer: {
       message: 'Released under the ISC License.',
@@ -101,4 +99,4 @@ export default defineConfig({
     ['meta', { name: 'og:site_name', content: 'IMZO Agnost' }],
     ['meta', { name: 'og:image', content: 'https://erkinov97.github.io/imzo-agnost/og-image.png' }]
   ]
-})
+});
