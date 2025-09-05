@@ -1,8 +1,20 @@
-# Examples
+# Framework Integration Examples
 
-Practical examples showing how to use IMZO Agnost in different scenarios.
+Bu bo'limda `imzo-agnost` kutubxonasini turli JavaScript framework va muhitlarda
+qanday ishlatishni ko'rsatamiz.
 
 ## Available Examples
+
+### Framework Integrations
+
+- **[Vue.js Integration](./vue)** - Vue 3 Composition API, Options API, va
+  Nuxt.js
+- **[React Integration](./react)** - React hooks, class componentlar, va Next.js
+- **[Angular Integration](./angular)** - Angular service, component va module
+  integratsiya
+- **[Vanilla JavaScript](./vanilla)** - Browser va ES modules bilan
+- **[Node.js Server](./nodejs)** - Express.js, Fastify, va NestJS server
+  integratsiya
 
 ### Basic Usage
 
@@ -10,12 +22,6 @@ Practical examples showing how to use IMZO Agnost in different scenarios.
   signing
 - **[Advanced Examples](/examples/advanced)** - Complex scenarios and best
   practices
-
-### Framework Integrations
-
-- **[React Integration](/examples/react)** - Using with React applications
-- **[Vue.js Integration](/examples/vue)** - Vue.js component examples
-- **[Node.js Server](/examples/nodejs)** - Server-side integration
 
 ## Quick Examples
 
