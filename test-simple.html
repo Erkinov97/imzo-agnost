@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-IMZO Agnostic - Global Test Simple</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        button { padding: 10px 20px; margin: 5px; background: #2196F3; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        button:hover { background: #1976D2; }
+        .result { margin: 10px 0; padding: 10px; border-radius: 5px; }
+        .success { background: #d4edda; border: 1px solid #c3e6cb; color: #155724; }
+        .error { background: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; }
+        pre { background: #f4f4f4; padding: 10px; border-radius: 3px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>🚀 E-IMZO Agnostic - Simple Global Test</h1>
+    
+    <div>
+        <h3>Global Objects Test</h3>
+        <button onclick="checkGlobalObjects()">Check Global Objects</button>
+        <button onclick="testLegacyAPI()">Test Legacy API</button>
+        <button onclick="testModernAPI()">Test Modern API</button>
+        <button onclick="testDirectCAPIWS()">Test Direct CAPIWS</button>
+    </div>
+    
+    <div id="results"></div>
+
+    <script>
+        function addResult(html, isError = false) {
+            const div = document.createElement('div');
+            div.className = `result ${isError ? 'error' : 'success'}`;
+            div.innerHTML = html;
+            document.getElementById('results').appendChild(div);
+        }
+
+        function checkGlobalObjects() {
+            const objects = {
+                'CAPIWS': typeof CAPIWS !== 'undefined',
+                'EIMZOClient': typeof EIMZOClient !== 'undefined', 
+                'capiws': typeof capiws !== 'undefined',
+                'eimzoApi': typeof eimzoApi !== 'undefined'
+            };
+            
+            let html = '<h4>Global Objects Status:</h4><ul>';
+            for (const [name, exists] of Object.entries(objects)) {
+                html += `<li><strong>${name}</strong>: ${exists ? '✅ Mavjud' : '❌ Mavjud emas'}</li>`;
+            }
+            html += '</ul>';
+            
+            addResult(html, Object.values(objects).some(v => !v));
+        }
+
+        function testLegacyAPI() {
+            if (typeof EIMZOClient === 'undefined') {
+                addResult('<h4>❌ EIMZOClient mavjud emas</h4>', true);
+                return;
+            }
+
+            addResult('<h4>🔄 EIMZOClient test boshlandi...</h4>');
+            
+            EIMZOClient.checkVersion(
+                (major, minor) => {
+                    addResult(`<h4>✅ EIMZOClient Version: ${major}.${minor}</h4>`);
+                },
+                (error, reason) => {
+                    addResult(`<h4>❌ EIMZOClient Error:</h4><pre>${error || reason}</pre>`, true);
+                }
+            );
+        }
+
+        function testModernAPI() {
+            if (typeof eimzoApi === 'undefined') {
+                addResult('<h4>❌ eimzoApi mavjud emas</h4>', true);
+                return;
+            }
+
+            addResult('<h4>🔄 Modern API test boshlandi...</h4>');
+            
+            eimzoApi.initialize()
+                .then(version => {
+                    addResult(`<h4>✅ Modern API Version: ${version.major}.${version.minor}</h4>`);
+                })
+                .catch(error => {
+                    addResult(`<h4>❌ Modern API Error:</h4><pre>${error}</pre>`, true);
+                });
+        }
+
+        function testDirectCAPIWS() {
+            if (typeof CAPIWS === 'undefined') {
+                addResult('<h4>❌ CAPIWS mavjud emas</h4>', true);
+                return;
+            }
+
+            addResult('<h4>🔄 CAPIWS test boshlandi...</h4>');
+            addResult(`<p>CAPIWS URL: ${CAPIWS.URL || 'Not set'}</p>`);
+            
+            CAPIWS.version(
+                (event, data) => {
+                    addResult(`<h4>✅ CAPIWS Response:</h4><pre>${JSON.stringify(data, null, 2)}</pre>`);
+                },
+                (error) => {
+                    addResult(`<h4>❌ CAPIWS Error:</h4><pre>${error}</pre><p>E-IMZO dasturi ishlamayotgan bo'lishi mumkin</p>`, true);
+                }
+            );
+        }
+    </script>
+
+    <!-- E-IMZO Agnostic kutubxonasini yuklash -->
+    <script type="module">
+        try {
+            // Import qilish - bu avtomatik ravishda global obyektlarni yaratadi
+            await import('./dist/index.mjs');
+            
+            setTimeout(() => {
+                addResult(`
+                    <h4>🎉 Kutubxona yuklandi!</h4>
+                    <p>Global obyektlar avtomatik yaratildi. Test tugmalarini bosing.</p>
+                `, false);
+            }, 100);
+            
+        } catch (error) {
+            addResult(`<h4>❌ Kutubxonani yuklashda xatolik:</h4><pre>${error}</pre>`, true);
+        }
+    </script>
+</body>
+</html>

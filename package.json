@@ -1,0 +1,66 @@
+{
+  "name": "imzo-agnost",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Modern TypeScript library for E-IMZO API with comprehensive plugin architecture supporting all E-IMZO operations including PFX/PKCS7/FTJC/CryptoAuth/X509/TSA/CRL/PKI and more",
+  "main": "dist/index.cjs",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    "import": "./dist/index.mjs",
+    "require": "./dist/index.cjs"
+  },
+  "scripts": {
+    "dev": "tsup src/index.ts --dts --format esm,cjs --watch",
+    "build": "tsup src/index.ts --dts --format esm,cjs",
+    "preview": "tsc --noEmit",
+    "lint": "oxlint src && eslint src --ext .ts,.tsx",
+    "lint:fix": "oxlint src --fix && eslint src --ext .ts,.tsx --fix",
+    "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,md}\"",
+    "format:check": "prettier --check \"src/**/*.{ts,tsx,js,jsx,json,md}\"",
+    "type-check": "tsc --noEmit",
+    "quality": "pnpm run type-check && pnpm run lint && pnpm run format:check",
+    "quality:fix": "pnpm run type-check && pnpm run lint:fix && pnpm run format",
+    "prepare": "husky",
+    "commit": "cz",
+    "test": "echo \"Tests will be added later\" && exit 0"
+  },
+  "keywords": [
+    "e-imzo",
+    "digital-signature",
+    "pkcs7",
+    "pfx",
+    "uzbekistan",
+    "crypto",
+    "typescript",
+    "plugin",
+    "websocket",
+    "capiws"
+  ],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.15.0",
+  "config": {
+    "commitizen": {
+      "path": "cz-conventional-changelog"
+    }
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^19.8.1",
+    "@commitlint/config-conventional": "^19.8.1",
+    "@eslint/js": "^9.35.0",
+    "@types/eslint": "^9.6.1",
+    "@types/node": "^24.3.1",
+    "@typescript-eslint/eslint-plugin": "^8.42.0",
+    "@typescript-eslint/parser": "^8.42.0",
+    "commitizen": "^4.3.1",
+    "cz-conventional-changelog": "^3.3.0",
+    "eslint": "^9.35.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.1.6",
+    "oxlint": "^1.14.0",
+    "prettier": "^3.6.2",
+    "tsup": "^8.5.0",
+    "typescript": "^5.9.2"
+  }
+}
