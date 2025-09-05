@@ -1,19 +1,19 @@
 // Legacy exports for backward compatibility
-export { default as CAPIWS } from './e-imzo/capiws';
 export {
-  default as EIMZOClient,
   dates,
+  default as EIMZOClient,
   type CertificateInfo,
   type EIMZOClientType
-} from './e-imzo-client';
+} from './e-imzo-client.js';
+export { default as CAPIWS } from './e-imzo/capiws.js';
 
 // New modern API
-export { default as eimzoApi, EIMZOApi } from './eimzo-api';
-export * from './eimzo-api';
+export * from './eimzo-api.js';
+export { default as eimzoApi, EIMZOApi } from './eimzo-api.js';
 
 // Core types and classes
-export * from './core/types';
-export { EIMZOPlugin, PluginManager } from './core/plugin-base';
+export { EIMZOPlugin, PluginManager } from './core/plugin-base.js';
+export * from './core/types.js';
 
 // Global setup for browser (avtomatik ishga tushadi)
-import './global';
+import './global.js';

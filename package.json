@@ -7,23 +7,28 @@
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
   "exports": {
-    "import": "./dist/index.mjs",
-    "require": "./dist/index.cjs"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    }
   },
   "scripts": {
-    "dev": "tsup src/index.ts --dts --format esm,cjs --watch",
-    "build": "tsup src/index.ts --dts --format esm,cjs",
+    "dev": "tsup --watch",
+    "build": "tsup",
+    "build:prod": "tsup --minify",
     "preview": "tsc --noEmit",
     "lint": "oxlint src && eslint src --ext .ts,.tsx",
     "lint:fix": "oxlint src --fix && eslint src --ext .ts,.tsx --fix",
-    "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,md}\"",
-    "format:check": "prettier --check \"src/**/*.{ts,tsx,js,jsx,json,md}\"",
+    "format": "prettier --write \"src/**/*.{ts,tsx,js,jsx,json,md}\" \"*.{ts,js,json,md}\"",
+    "format:check": "prettier --check \"src/**/*.{ts,tsx,js,jsx,json,md}\" \"*.{ts,js,json,md}\"",
     "type-check": "tsc --noEmit",
     "quality": "pnpm run type-check && pnpm run lint && pnpm run format:check",
     "quality:fix": "pnpm run type-check && pnpm run lint:fix && pnpm run format",
     "prepare": "husky",
     "commit": "cz",
-    "test": "echo \"Tests will be added later\" && exit 0"
+    "test": "echo \"Tests will be added later\" && exit 0",
+    "clean": "rm -rf dist"
   },
   "keywords": [
     "e-imzo",
@@ -48,6 +53,7 @@
   "devDependencies": {
     "@commitlint/cli": "^19.8.1",
     "@commitlint/config-conventional": "^19.8.1",
+    "@commitlint/types": "^19.8.1",
     "@eslint/js": "^9.35.0",
     "@types/eslint": "^9.6.1",
     "@types/node": "^24.3.1",
@@ -56,11 +62,13 @@
     "commitizen": "^4.3.1",
     "cz-conventional-changelog": "^3.3.0",
     "eslint": "^9.35.0",
+    "eslint-plugin-unicorn": "^60.0.0",
     "husky": "^9.1.7",
     "lint-staged": "^16.1.6",
     "oxlint": "^1.14.0",
     "prettier": "^3.6.2",
     "tsup": "^8.5.0",
-    "typescript": "^5.9.2"
+    "typescript": "^5.9.2",
+    "typescript-eslint": "^8.42.0"
   }
 }

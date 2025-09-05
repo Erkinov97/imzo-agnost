@@ -8,16 +8,12 @@ export interface Pkcs7Response {
 }
 
 export interface Pkcs7InfoResponse {
-  success: true;
-  signers: Array<{
-    serialNumber: string;
-    issuer: string;
-    subject: string;
-    signTime?: string;
-    certificate?: string;
-  }>;
-  data?: string;
-  certificates?: string[];
+  success: boolean;
+  signatures: {
+    signer: string;
+    timestamp?: string;
+    valid: boolean;
+  }[];
 }
 
 export interface TimestampTokenResponse {

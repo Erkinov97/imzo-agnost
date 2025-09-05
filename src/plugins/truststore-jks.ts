@@ -12,7 +12,7 @@ export class TruststoreJKSPlugin extends EIMZOPlugin {
   /**
    * Открывает хранилище доверенных сертификатов 'truststore.jks' в домашней директории пользователя
    */
-  openTruststore = (onSuccess: CallbackFunction<any>, onError: ErrorCallback): void => {
+  openTruststore = (onSuccess: CallbackFunction<unknown>, onError: ErrorCallback): void => {
     this.callMethod('open_truststore', [], onSuccess, onError);
   };
 
@@ -21,14 +21,14 @@ export class TruststoreJKSPlugin extends EIMZOPlugin {
   /**
    * Открывает хранилище доверенных сертификатов 'truststore.jks' в домашней директории пользователя
    */
-  async openTruststoreAsync(): Promise<any> {
+  async openTruststoreAsync(): Promise<unknown> {
     return new Promise((resolve, reject) => {
       this.openTruststore(
         (event, data) => {
           if (data.success) {
             resolve(data);
           } else {
-            reject(new Error(data.reason || 'Unknown error'));
+            reject(new Error(data.reason ?? 'Unknown error'));
           }
         },
         error => reject(new Error(String(error)))

@@ -332,7 +332,7 @@ MIT License - see LICENSE file for details
 For issues and questions:
 
 - Check the [documentation](./docs)
-- Open an [issue](https://github.com/your-repo/issues)
+- Open an [issue](https://github.com/Erkinov97/imzo-agnost/issues)
 - Contact support
 
 ---

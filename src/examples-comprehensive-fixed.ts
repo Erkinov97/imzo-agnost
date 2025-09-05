@@ -1,4 +1,4 @@
-import { 
+import {
   EIMZOApi,
   type PfxPlugin,
   type Pkcs7Plugin,

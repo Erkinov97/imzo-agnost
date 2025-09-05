@@ -1,5 +1,5 @@
-import type { PluginMethodCall, CallbackFunction, ErrorCallback, BasePlugin } from './types';
-import CAPIWS from '../e-imzo/capiws';
+import CAPIWS from '../e-imzo/capiws.js';
+import type { BasePlugin, CallbackFunction, ErrorCallback, PluginMethodCall } from './types.js';
 
 /**
  * Core plugin base class that all E-IMZO plugins extend
@@ -12,9 +12,9 @@ export abstract class EIMZOPlugin implements BasePlugin {
   /**
    * Execute a plugin method call through CAPIWS
    */
-  protected callMethod<T = any>(
+  protected callMethod<T = unknown>(
     methodName: string,
-    args: any[] = [],
+    args: unknown[] = [],
     onSuccess: CallbackFunction<T>,
     onError: ErrorCallback
   ): void {
@@ -30,20 +30,20 @@ export abstract class EIMZOPlugin implements BasePlugin {
   /**
    * Create a promise-based wrapper for plugin methods
    */
-  protected createPromiseMethod<TArgs extends any[], TResult = any>(methodName: string) {
+  protected createPromiseMethod<TArgs extends unknown[], TResult = unknown>(methodName: string) {
     return (...args: TArgs): Promise<TResult> => {
       return new Promise((resolve, reject) => {
         this.callMethod<TResult>(
           methodName,
-          args as any[],
-          (event, data) => {
+          args as unknown[],
+          (_event, data) => {
             if (data.success) {
               resolve(data as TResult);
             } else {
-              reject(new Error(data.reason || 'Unknown error'));
+              reject(new Error(data.reason ?? 'Unknown error'));
             }
           },
-          error => reject(error)
+          error => reject(error instanceof Error ? error : new Error(String(error)))
         );
       });
     };
@@ -52,7 +52,7 @@ export abstract class EIMZOPlugin implements BasePlugin {
   /**
    * Create both callback and promise versions of a method
    */
-  protected createMethod<TArgs extends any[], TResult = any>(methodName: string) {
+  protected createMethod<TArgs extends unknown[], TResult = unknown>(methodName: string) {
     const promiseMethod = this.createPromiseMethod<TArgs, TResult>(methodName);
 
     const callbackMethod = (...args: [...TArgs, CallbackFunction<TResult>, ErrorCallback]) => {
@@ -60,7 +60,7 @@ export abstract class EIMZOPlugin implements BasePlugin {
       const onSuccess = args[args.length - 2] as CallbackFunction<TResult>;
       const onError = args[args.length - 1] as ErrorCallback;
 
-      this.callMethod<TResult>(methodName, methodArgs as any[], onSuccess, onError);
+      this.callMethod<TResult>(methodName, methodArgs as unknown[], onSuccess, onError);
     };
 
     return {

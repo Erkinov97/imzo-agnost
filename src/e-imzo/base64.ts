@@ -14,7 +14,7 @@ declare global {
   interface Window {
     Base64: Base64API;
   }
-   
+
   var Base64: Base64API | undefined;
 }
 
@@ -164,12 +164,12 @@ declare global {
 
       if (byte < 0x80) {
         result += String.fromCharCode(byte);
-      } else if ((byte >> 5) === 0x06) {
+      } else if (byte >> 5 === 0x06) {
         const nextByte = bytes[++i];
         if (typeof nextByte !== 'undefined') {
           result += String.fromCharCode(((byte & 0x1f) << 6) | (nextByte & 0x3f));
         }
-      } else if ((byte >> 4) === 0x0e) {
+      } else if (byte >> 4 === 0x0e) {
         const nextByte1 = bytes[++i];
         const nextByte2 = bytes[++i];
         if (typeof nextByte1 !== 'undefined' && typeof nextByte2 !== 'undefined') {

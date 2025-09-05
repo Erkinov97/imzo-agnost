@@ -6,13 +6,9 @@ export interface ApiResponse<T = unknown> {
   [key: string]: unknown;
 }
 
-export interface CallbackFunction<T = unknown> {
-  (event: MessageEvent, data: ApiResponse<T>): void;
-}
+export type CallbackFunction<T = unknown> = (event: MessageEvent, data: ApiResponse<T>) => void;
 
-export interface ErrorCallback {
-  (error: unknown): void;
-}
+export type ErrorCallback = (error: unknown) => void;
 
 export interface PluginMethodCall {
   plugin: string;
@@ -27,13 +23,14 @@ export interface BasePlugin {
 }
 
 // Generic plugin method interface
-export interface PluginMethod<TArgs extends unknown[] = unknown[], TResult = unknown> {
-  (...args: [...TArgs, CallbackFunction<TResult>, ErrorCallback]): void;
-}
+export type PluginMethod<TArgs extends unknown[] = unknown[], TResult = unknown> = (
+  ...args: [...TArgs, CallbackFunction<TResult>, ErrorCallback]
+) => void;
 
 // Utility types for better type inference
 export type PluginMethodArgs<T> = T extends PluginMethod<infer Args, unknown> ? Args : never;
-export type PluginMethodResult<T> = T extends PluginMethod<unknown[], infer Result> ? Result : never;
+export type PluginMethodResult<T> =
+  T extends PluginMethod<unknown[], infer Result> ? Result : never;
 
 // Base response types
 export interface ListResponse<T> {

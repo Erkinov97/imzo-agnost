@@ -14,7 +14,7 @@ export class PKIPlugin extends EIMZOPlugin {
    */
   enrollPfxStep1 = (
     request: string,
-    onSuccess: CallbackFunction<any>,
+    onSuccess: CallbackFunction<unknown>,
     onError: ErrorCallback
   ): void => {
     this.callMethod('enroll_pfx_step1', [request], onSuccess, onError);
@@ -25,7 +25,7 @@ export class PKIPlugin extends EIMZOPlugin {
    */
   enrollPfxStep2 = (
     response: string,
-    onSuccess: CallbackFunction<any>,
+    onSuccess: CallbackFunction<unknown>,
     onError: ErrorCallback
   ): void => {
     this.callMethod('enroll_pfx_step2', [response], onSuccess, onError);

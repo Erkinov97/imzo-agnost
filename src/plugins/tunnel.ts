@@ -23,7 +23,7 @@ export class TunnelPlugin extends EIMZOPlugin {
   };
 
   // Promise-based wrapper (если нужен)
-  async createTunnelAsync(serverHost: string, serverPort: number, keyId: string): Promise<any> {
+  async createTunnelAsync(serverHost: string, serverPort: number, keyId: string): Promise<unknown> {
     return new Promise((resolve, reject) => {
       this.createTunnel(
         serverHost,
@@ -33,7 +33,7 @@ export class TunnelPlugin extends EIMZOPlugin {
           if (data.success) {
             resolve(data);
           } else {
-            reject(new Error(data.reason || 'Unknown error'));
+            reject(new Error(data.reason ?? 'Unknown error'));
           }
         },
         error => reject(new Error(String(error)))

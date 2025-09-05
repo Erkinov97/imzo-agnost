@@ -67,17 +67,11 @@ interface ErrorInfo {
   r?: string;
 }
 
-interface FailCallback {
-  (error: unknown, reason: string | null): void;
-}
+type FailCallback = (error: unknown, reason: string | null) => void;
 
-interface ItemIdGenerator {
-  (vo: CertificateInfo, rec: string): string;
-}
+type ItemIdGenerator = (vo: CertificateInfo, rec: string) => string;
 
-interface ItemUiGenerator {
-  (key: string, vo: CertificateInfo): any;
-}
+type ItemUiGenerator = (key: string, vo: CertificateInfo) => any;
 
 interface ApiResponse {
   success: boolean;

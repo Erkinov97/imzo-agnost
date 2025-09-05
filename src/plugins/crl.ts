@@ -5,11 +5,11 @@ export interface CRLInfo {
   issuer: string;
   thisUpdate: string;
   nextUpdate: string;
-  revokedCertificates: Array<{
+  revokedCertificates: {
     serialNumber: string;
     revocationDate: string;
     reason?: string;
-  }>;
+  }[];
 }
 
 export interface CertificateStatus {
@@ -29,7 +29,11 @@ export class CRLPlugin extends EIMZOPlugin {
   /**
    * Открывает CRL
    */
-  openCrl = (crlData: string, onSuccess: CallbackFunction<any>, onError: ErrorCallback): void => {
+  openCrl = (
+    crlData: string,
+    onSuccess: CallbackFunction<unknown>,
+    onError: ErrorCallback
+  ): void => {
     this.callMethod('open_crl', [crlData], onSuccess, onError);
   };
 
@@ -38,7 +42,7 @@ export class CRLPlugin extends EIMZOPlugin {
    */
   openCrlFile = (
     filePath: string,
-    onSuccess: CallbackFunction<any>,
+    onSuccess: CallbackFunction<unknown>,
     onError: ErrorCallback
   ): void => {
     this.callMethod('open_crl_file', [filePath], onSuccess, onError);

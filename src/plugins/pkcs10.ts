@@ -5,7 +5,7 @@ export interface PKCS10Info {
   subject: string;
   publicKey: string;
   signatureAlgorithm: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export interface KeyPairInfo {
