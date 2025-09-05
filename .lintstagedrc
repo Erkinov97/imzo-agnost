@@ -4,10 +4,6 @@
     "eslint --fix",
     "prettier --write"
   ],
-  "*.{js,jsx,mjs}": [
-    "eslint --fix",
-    "prettier --write"
-  ],
   "*.{json,md}": [
     "prettier --write"
   ]
