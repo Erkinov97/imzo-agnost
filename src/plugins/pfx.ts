@@ -1,4 +1,5 @@
 import { EIMZOPlugin, RegisterPlugin } from '../core/plugin-base';
+import { sessionManager, type SessionConfig } from '../core/session-manager';
 import type {
   CertificateInfo,
   KeyResponse,
@@ -27,11 +28,68 @@ export interface DiskInfo {
 
 /**
  * PFX Plugin for working with PFX key storage files
+ * Session management support for automatic key lifecycle
  */
 @RegisterPlugin
 export class PfxPlugin extends EIMZOPlugin {
   readonly name = 'pfx';
-  readonly description = 'Plugin for working with PFX key storage files';
+  readonly description = 'Plugin for working with PFX key storage files with session management';
+
+  // Session management configuration
+  updateSessionConfig(config: Partial<SessionConfig>): void {
+    sessionManager.updateConfig(config);
+  }
+
+  // Certificate cache for keyId lookup
+  private certificateCache = new Map<string, PfxCertificate>();
+
+  /**
+   * Get keyId from certificate identifier
+   * Used for: await pfxPlugin.verifyPasswordAsync(keyId);
+   * @param certificateId - Format: "disk:path:name:alias" or just "alias"
+   * @returns keyId or null if not found
+   */
+  getKeyId(certificateId: string): string | null {
+    // Certificate ID dan keyId ni olish
+    return sessionManager.getKeyId(certificateId);
+  }
+
+  /**
+   * Get all active key sessions
+   */
+  getActiveSessions() {
+    return sessionManager.getActiveSessions();
+  }
+
+  /**
+   * Find certificate ID by partial match (alias, name, etc.)
+   */
+  findCertificateId(searchTerm: string): string | null {
+    // Cache dan qidirish
+    for (const [certId, cert] of this.certificateCache.entries()) {
+      if (cert.alias === searchTerm || cert.name === searchTerm || certId.includes(searchTerm)) {
+        return certId;
+      }
+    }
+
+    // Session dan qidirish
+    const sessions = sessionManager.getActiveSessions();
+    for (const session of sessions) {
+      if (session.certificateId.includes(searchTerm)) {
+        return session.certificateId;
+      }
+    }
+
+    return null;
+  }
+
+  /**
+   * Clear all sessions
+   */
+  async clearAllSessions(): Promise<void> {
+    await sessionManager.clearAllSessions();
+    this.certificateCache.clear();
+  }
 
   // Callback-based methods
 
@@ -67,7 +125,12 @@ export class PfxPlugin extends EIMZOPlugin {
   };
 
   /**
-   * Load key and get key identifier
+   * Load key and get key identifier with session management
+   * @param disk - Storage disk name
+   * @param path - Path to PFX file
+   * @param name - File name
+   * @param alias - Certificate alias
+   * @param saveForHours - Save in session for automatic management (6 hours default)
    */
   loadKey = (
     disk: string,
@@ -75,9 +138,64 @@ export class PfxPlugin extends EIMZOPlugin {
     name: string,
     alias: string,
     onSuccess: CallbackFunction<KeyResponse>,
-    onError: ErrorCallback
+    onError: ErrorCallback,
+    saveForHours?: number
   ): void => {
-    this.callMethod('load_key', [disk, path, name, alias], onSuccess, onError);
+    const originalOnSuccess: CallbackFunction<KeyResponse> = (event, response) => {
+      if (!response.data) return;
+
+      const keyResponse = response.data;
+      // Certificate ID ni yaratish
+      const certificateId = `${disk}:${path}:${name}:${alias}`;
+
+      // Basic certificate ma'lumotlari
+      const certificate: PfxCertificate = {
+        disk,
+        path,
+        name,
+        alias,
+        serialNumber: '',
+        subjectName: '',
+        validFromDate: '',
+        validToDate: '',
+        issuerName: '',
+        subjectId: '',
+        publicKeyAlgorithm: '',
+        signAlgorithm: '',
+        keyUsage: '',
+        extendedKeyUsage: '',
+        crlDistributionPoints: '',
+        authorityInfoAccess: '',
+        subjectAltName: '',
+        issuerAltName: '',
+        subjectKeyIdentifier: '',
+        authorityKeyIdentifier: '',
+        basicConstraints: '',
+        certificatePolicies: '',
+        keyUsageNonRepudiation: false,
+        keyUsageDigitalSignature: false,
+        keyUsageContentCommitment: false,
+        extendedKeyUsageTimeStamping: false
+      };
+
+      this.certificateCache.set(certificateId, certificate);
+
+      // Session management (faqat saveForHours ko'rsatilgan bo'lsa)
+      if (saveForHours && saveForHours > 0 && keyResponse.keyId) {
+        sessionManager.saveKeySession(
+          keyResponse.keyId,
+          certificateId,
+          certificate,
+          true // Auto unload enabled
+        );
+
+        console.log(`💾 Key session saved for ${saveForHours} hours: ${certificateId}`);
+      }
+
+      onSuccess(event, response);
+    };
+
+    this.callMethod('load_key', [disk, path, name, alias], originalOnSuccess, onError);
   };
 
   /**
@@ -187,11 +305,38 @@ export class PfxPlugin extends EIMZOPlugin {
   listAllCertificatesAsync = this.createPromiseMethod<[], PfxListResponse>('list_all_certificates');
 
   /**
-   * Load key (Promise version)
+   * Load key (Promise version) with session management
+   * @param disk Storage disk name
+   * @param path Path to PFX file
+   * @param name File name
+   * @param alias Certificate alias
+   * @param saveForHours Save in session for automatic management
    */
-  loadKeyAsync = this.createPromiseMethod<[string, string, string, string], KeyResponse>(
-    'load_key'
-  );
+  loadKeyAsync = async (
+    disk: string,
+    path: string,
+    name: string,
+    alias: string,
+    saveForHours?: number
+  ): Promise<KeyResponse> => {
+    return new Promise<KeyResponse>((resolve, reject) => {
+      this.loadKey(
+        disk,
+        path,
+        name,
+        alias,
+        (event, response) => {
+          if (response.success && response.data) {
+            resolve(response.data);
+          } else {
+            reject(new Error(response.reason ?? 'Unknown error'));
+          }
+        },
+        reject,
+        saveForHours
+      );
+    });
+  };
 
   /**
    * Unload key (Promise version)

@@ -15,5 +15,14 @@ export { default as eimzoApi, EIMZOApi } from './eimzo-api.js';
 export { EIMZOPlugin, PluginManager } from './core/plugin-base.js';
 export * from './core/types.js';
 
+// Session Management
+export {
+  sessionManager,
+  EIMZOSessionManager,
+  type SessionConfig,
+  type KeySession,
+  type StorageType
+} from './core/session-manager.js';
+
 // Global setup for browser (avtomatik ishga tushadi)
 import './global.js';
