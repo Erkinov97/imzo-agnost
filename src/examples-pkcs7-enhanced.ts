@@ -3,8 +3,8 @@
  * Simplified API with auto base64 encoding and smart defaults
  */
 
-import { pkcs7Plugin } from './plugins/pkcs7.js';
 import { pfxPlugin } from './plugins/pfx.js';
+import { pkcs7Plugin } from './plugins/pkcs7.js';
 
 // ===============================================
 // 1. SIMPLIFIED PKCS7 CREATION (RECOMMENDED)
@@ -425,28 +425,23 @@ function apiComparison() {
 // ===============================================
 
 export {
+  // Comparison
+  apiComparison,
+  createDetachedPkcs7,
   // Basic usage
   createPkcs7Simple,
-  createDetachedPkcs7,
   createPkcs7WithBase64Data,
-
-  // Different data types
-  signFileContent,
-  signJsonData,
-  signBinaryData,
-
-  // Verification
-  verifyDetachedSignature,
   getDetachedPkcs7Info,
-
+  newWayExample,
   // Migration examples
   oldWayExample,
-  newWayExample,
-
+  signBinaryData,
+  // Different data types
+  signFileContent,
   // UI integration
   signFormData,
+  signJsonData,
   signUploadedFile,
-
-  // Comparison
-  apiComparison
+  // Verification
+  verifyDetachedSignature
 };
